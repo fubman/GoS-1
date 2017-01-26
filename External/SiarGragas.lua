@@ -19,7 +19,7 @@ Menu.Combo:MenuElement({id = "ComboQ", name = "Use Q", value = true})
 Menu.Combo:MenuElement({id = "ComboW", name = "Use W", value = true})
 Menu.Combo:MenuElement({id = "ComboE", name = "Use E", value = true})
 Menu.Combo:MenuElement({id = "ComboR", name = "Use R", value = true})
-Menu.Combo:MenuElement({id = "REnemy", name = "Min. Enemies to cast R", value = 2, min  = 1, max = 5})
+Menu.Combo:MenuElement({id = "REnemy", name = "Min. Enemies around to cast R", value = 2, min  = 1, max = 5})
 
 -- Harass
 Menu:MenuElement({type = MENU, id = "Harass", name = "Harass Settings"})
@@ -28,7 +28,7 @@ Menu.Harass:MenuElement({id = "HarassE", name = "Use E", value = true})
 Menu.Harass:MenuElement({id = "HarassMana", name = "Min. Mana", value = 40, min = 0, max = 100})
 
 -- Farm
-Menu:MenuElement({type = MENU, id = "Farm", name = "Farm Settings - WORK IN PROGRESS"})
+Menu:MenuElement({type = MENU, id = "Farm", name = "Farm Settings"})
 Menu.Farm:MenuElement({id = "FarmQ", name = "Use Q", value = true})
 Menu.Farm:MenuElement({id = "FarmW", name = "Use W", value = true})
 Menu.Farm:MenuElement({id = "FarmE", name = "Use E", value = true})
@@ -40,6 +40,13 @@ Menu.Ks:MenuElement({id = "KsQ", name = "Use Q", value = true})
 Menu.Ks:MenuElement({id = "Recall", name = "Don't Ks during Recall", value = true})
 Menu.Ks:MenuElement({id = "Disabled", name = "Don't Ks", value = false})
 
+-- Draw
+Menu:MenuElement({type = MENU, id = "Draw", name = "Drawing Settings"})
+Menu.Draw:MenuElement({id = "DrawQ", name = "Draw Q", value = true})
+Menu.Draw:MenuElement({id = "DrawE", name = "Draw E", value = true})
+Menu.Draw:MenuElement({id = "DrawR", name = "Draw R", value = true})
+Menu.Draw:MenuElement({id = "All", name = "Disable All", value = true})
+
 -- Tick | KillSteal | Cast
 Callback.Add('Tick', function()
 	if not myHero.dead then
@@ -49,6 +56,9 @@ Callback.Add('Tick', function()
 		end
 		if EOW:Mode() == "Harass" then
 			Harass()
+		end
+		if EOW:Mode() == "LaneClear" then
+			Farm()
 		end
 	end
 end)
@@ -75,6 +85,10 @@ function CastQ(qPos)
 	end
 end
 
+function CastQF(qPos)
+	Control.CastSpell(HK_Q, qPos)
+end
+
 function CastW(target)
 	if target and IsReady(_W) and IsValidTarget(target, Spells.W.range, false, myHero.pos, Target) then
 		local wPos = target:GetPrediction(Spells.W.Speed, Spells.W.Delay)
@@ -90,6 +104,10 @@ function CastE(ePos)
 			Control.CastSpell(HK_E, ePos)
 		end
 	end
+end
+
+function CastEF(ePos)
+	Control.CastSpell(HK_E, ePos)
 end
 
 function CastR(rPos)
@@ -129,6 +147,28 @@ function Harass()
 		end
 		if Menu.Harass.HarassE:Value() then
 			CastE(ePos)
+		end
+	end
+end
+
+function Farm()
+	if (myHero.mana/myHero.maxMana >= Menu.Harass.HarassMana:Value() / 100) then
+		local target = EOW:GetHighestMinion()
+		if not target then return end
+		if Menu.Farm.FarmW:Value() then
+			CastW(myHero)
+		end
+		if Menu.Farm.FarmQ:Value() and IsReady(_Q) then
+			local qPos = target:GetPrediction(Spells.Q.speed, Spells.Q.delay)
+			if IsValidTarget(myHero, Spells.Q.range, false, qPos) then
+				CastQF(qPos)
+			end
+		end
+		if Menu.Farm.FarmE:Value() and IsReady(_E) then
+			local ePos = target:GetPrediction(Spells.E.speed, Spells.E.delay)
+			if IsValidTarget(myHero, Spells.E.range, false, ePos) then
+				CastEF(ePos)
+			end
 		end
 	end
 end
@@ -245,4 +285,20 @@ end
 function IsReady(slot)
 	assert(type(slot) == "number", "IsReady > invalid argument: expected number got " ..type(slot))
 	return (myHero:GetSpellData(slot).level >= 1 and myHero:GetSpellData(slot).currentCd == 0 and myHero:GetSpellData(slot).mana <= myHero.mana)
+end
+
+function OnDraw()
+	if Menu.Draw.All:Value() then return end
+
+	if Menu.Draw.DrawQ:Value() and IsReady(_Q) then
+		Draw.Circle(myHero.pos, Spells.Q.range, 1, Draw.Color(255, 255, 255, 255))
+	end
+
+	if Menu.Draw.DrawE:Value() and IsReady(_E) then
+		Draw.Circle(myHero.pos, Spells.E.range, 1, Draw.Color(255, 255, 255, 255))
+	end
+
+	if Menu.Draw.DrawR:Value() and IsReady(_R) then
+		Draw.Circle(myHero.pos, Spells.R.range, 1, Draw.Color(255, 255, 255, 255))
+	end
 end

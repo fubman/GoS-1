@@ -25,6 +25,7 @@ EzrealMenu.Farm:Slider("Mana", "Min. Mana", 40, 0, 100, 1)
 -- Ks
 EzrealMenu:SubMenu("Ks", "KillSteal Settings")
 EzrealMenu.Ks:Boolean("Q", "Use Q", true)
+EzrealMenu.Ks:Boolean("W", "Use W", true)
 EzrealMenu.Ks:Boolean("R", "Use R", true)
 
 -- Draw
@@ -32,41 +33,66 @@ EzrealMenu:SubMenu("Draw", "Drawing Settings")
 EzrealMenu.Draw:Boolean("Q", "Draw Q", true)
 EzrealMenu.Draw:Boolean("W", "Draw W", true)
 
+-- Orbwalker's
+function Mode()
+	if _G.IOW_Loaded and IOW:Mode() then
+		return IOW:Mode()
+	elseif _G.PW_Loaded and PW:Mode() then
+		return PW:Mode()
+	elseif _G.DAC_Loaded and DAC:Mode() then
+		return DAC:Mode()
+	elseif _G.AutoCarry_Loaded and DACR:Mode() then
+		return DACR:Mode()
+	elseif _G.SLW_Loaded and SLW:Mode() then
+		return SLW:Mode()
+	end
+end
+
 -- Tick
 OnTick(function()
 
 	local target = GetCurrentTarget()
-	if IOW:Mode() == "Combo" then
+	if Mode() == "Combo" then
 		-- Q
 		if EzrealMenu.Combo.Q:Value() and Ready(_Q) and ValidTarget(target, 1150) then
-			local targetPos = GetOrigin(target)
-			CastSkillShot(_Q, targetPos)
+			local QPred = GetPredictionForPlayer(GetOrigin(myHero), target, GetMoveSpeed(target), 2000, 0.25, 1150, 30, true, true)
+			if QPred.HitChance == 1 then	
+				CastSkillShot(_Q, QPred.PredPos)
+			end
 		end
 		-- W
 		if EzrealMenu.Combo.W:Value() and Ready(_W) and ValidTarget(target, 1000) then
-			local targetPos = GetOrigin(target)
-			CastSkillShot(_W, targetPos)
+			local WPred = GetPredictionForPlayer(GetOrigin(myHero), target, GetMoveSpeed(target), 1550, 0.25, 1000, 40, false, true)
+			if WPred.HitChance == 1 then
+				CastSkillShot(_W, WPred.PredPos)
+			end
 		end
+		-- R
+		--if EzrealMenu.Combo.R:Value() and Ready(_R) and ValidTarget(target, 20000) then
 	end
 
-	if IOW:Mode() == "Harass" then
+	if Mode() == "Harass" then
 		if (myHero.mana/myHero.maxMana >= EzrealMenu.Harass.Mana:Value() /100) then
 
 			--Q
 			if EzrealMenu.Harass.Q:Value() and Ready(_Q) and ValidTarget(target, 1150) then
-				local targetPos = GetOrigin(target)
-				CastSkillShot(_Q, targetPos)
+				local QPred = GetPredictionForPlayer(GetOrigin(myHero), target, GetMoveSpeed(target), 2000, 0.25, 1150, 30, true, true)
+				if QPred.HitChance == 1 then	
+					CastSkillShot(_Q, QPred.PredPos)
+				end
 			end
 
 			--W
 			if EzrealMenu.Harass.W:Value() and Ready(_W) and ValidTarget(target, 1000) then
-				local targetPos = GetOrigin(target)
-				CastSkillShot(_W, targetPos)
+				local WPred = GetPredictionForPlayer(GetOrigin(myHero), target, GetMoveSpeed(target), 1550, 0.25, 1000, 40, false, true)
+				if WPred.HitChance == 1 then
+					CastSkillShot(_W, WPred.PredPos)
+				end
 			end
 		end
 	end
 
-	if IOW:Mode() == "LaneClear" then
+	if Mode() == "LaneClear" then
 		if (myHero.mana/myHero.maxMana >= EzrealMenu.Farm.Mana:Value() /100) then
 			
 			--Lane
@@ -91,16 +117,33 @@ OnTick(function()
 	
 	-- KS
 	for _, enemy in pairs(GetEnemyHeroes()) do
+		-- Q
 		if EzrealMenu.Ks.Q:Value() and Ready(_Q) and ValidTarget(enemy, 1550) then
 			if GetCurrentHP(enemy) < getdmg("Q", enemy, myHero) then
-				local targetPos = GetOrigin(target)
-				CastSkillShot(_Q, targetPos)
+				local QPred = GetPredictionForPlayer(GetOrigin(myHero), target, GetMoveSpeed(target), 2000, 0.25, 1150, 30, true, true)
+				if QPred.HitChance == 1 then	
+					CastSkillShot(_Q, QPred.PredPos)
+				end
 			end
 		end
-		if EzrealMenu.Ks.R:Value() and Ready(_R) and ValidTarget(enemy, 20000) then
+
+		-- W
+		if EzrealMenu.Ks.W:Value() and Ready(_W) and ValidTarget(enemy, 1000) then
+			if GetCurrentHP(enemy) < getdmg("Q", enemy, myHero) then
+				local WPred = GetPredictionForPlayer(GetOrigin(myHero), target, GetMoveSpeed(target), 1550, 0.25, 1000, 40, false, true)
+				if WPred.HitChance == 1 then
+					CastSkillShot(_W, QPred.PredPos)
+				end
+			end
+		end
+
+		-- R
+		if EzrealMenu.Ks.R:Value() and Ready(_R) and ValidTarget(enemy, 3000) then
 			if GetCurrentHP(enemy) < getdmg("R", enemy, myHero) then
-				local targetPos = GetOrigin(target)
-				CastSkillShot(_R, targetPos)
+				local RPred = GetPredictionForPlayer(GetOrigin(myHero), target, GetMoveSpeed(target), 2000, 1, 20000, 80, false, true)
+				if RPred.HitChance == 1 then
+					CastSkillShot(_R, RPred.PredPos)
+				end
 			end
 		end
 	end

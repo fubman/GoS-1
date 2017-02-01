@@ -97,7 +97,7 @@ OnTick(function()
 				CastSkillShot(_Q, targetPos)
 			end
 		end
-		if EzrealMenu.Ks.R:Value() and Ready(_R) and ValidTarget(enemy, 3000) then
+		if EzrealMenu.Ks.R:Value() and Ready(_R) and ValidTarget(enemy, 20000) then
 			if GetCurrentHP(enemy) < getdmg("R", enemy, myHero) then
 				local targetPos = GetOrigin(target)
 				CastSkillShot(_R, targetPos)

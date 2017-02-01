@@ -47,13 +47,6 @@ OnTick(function()
 			local targetPos = GetOrigin(target)
 			CastSkillShot(_W, targetPos)
 		end
-		-- R
-		--if EzrealMenu.Combo.R:Value() and Ready(_R) and ValidTarget(target, 3000) then
-			--local RPred = GetPredictionForPlayer(GetOrigin(myHero), target, GetMoveSpeed(target), math.huge, 75, 3000, 150, false, true)
-			--if RPred.HitChance == 1 then
-				--CastSkillShot(_R, RPred.PredPos)
-			--end
-		--end
 	end
 
 	if IOW:Mode() == "Harass" then

@@ -22,6 +22,11 @@ EzrealMenu:SubMenu("Farm", "Farm Settings")
 EzrealMenu.Farm:Boolean("Q", "Use Q", true)
 EzrealMenu.Farm:Slider("Mana", "Min. Mana", 40, 0, 100, 1)
 
+-- LastHit
+EzrealMenu:SubMenu("LastHit", "LastHit Settings")
+EzrealMenu.LastHit:Boolean("Q", "Use Q", true)
+EzrealMenu.LastHit:Slider("Mana", "Min. Mana", 40, 0, 100, 1)
+
 -- Ks
 EzrealMenu:SubMenu("Ks", "KillSteal Settings")
 EzrealMenu.Ks:Boolean("Q", "Use Q", true)
@@ -109,6 +114,20 @@ OnTick(function()
 				if GetTeam(mob) == MINION_JUNGLE then
 					if EzrealMenu.Farm.Q:Value() and Ready(_Q) and ValidTarget(mob, 1150) then
 						CastSkillShot(_Q, mob)
+					end
+				end
+			end
+		end
+	end
+
+	if Mode() == "LastHit" then
+		if (myHero.mana/myHero.maxMana >= EzrealMenu.LastHit.Mana:Value() /100) then
+			for _, minion in pairs(minionManager.objects) do
+				if GetTeam(minion) == MINION_ENEMY then
+					if EzrealMenu.LastHit.Q:Value() and Ready(_Q) and ValidTarget(minion, 1150) then
+						if GetCurrentHP(minion) < getdmg("Q", minion, myHero) then
+							CastSkillShot(_Q, minion)
+						end
 					end
 				end
 			end

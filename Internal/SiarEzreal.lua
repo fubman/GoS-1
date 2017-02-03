@@ -17,7 +17,7 @@ EzrealMenu.Harass:Boolean("Q", "Use Q", true)
 EzrealMenu.Harass:Boolean("W", "Use W", true)
 EzrealMenu.Harass:Slider("Mana", "Min. Mana", 40, 0, 100, 1)
 
--- LaneClear
+-- LaneClear and JungleClear
 EzrealMenu:SubMenu("Farm", "Farm Settings")
 EzrealMenu.Farm:Boolean("Q", "Use Q", true)
 EzrealMenu.Farm:Slider("Mana", "Min. Mana", 40, 0, 100, 1)

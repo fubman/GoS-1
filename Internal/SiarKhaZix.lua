@@ -125,7 +125,6 @@ function Ks()
 				if EPred.hitChance > 0.2 then
 					CastSkillShot(_E, EPred.castPos)
 					DelayAction(function() CastTargetSpell(target, _Q)end, 0.25)
-					DelayAction(function() CastSkillShot(_E, GetOrigin(EPred.castPos))end, 0.25)
 				end
 			end
 		end

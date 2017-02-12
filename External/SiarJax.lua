@@ -105,12 +105,12 @@ function KillSteal()
 				CastQ(Enemy)
 			end
 		end
-		if myHero:GetSpellData(5).name == "SummonerDot" and Menu.Ks.UseIg:Value() and IsReady(SUMMONER_2) then
+		if myHero:GetSpellData(5).name == "SummonerDot" and Menu.Ks.KsIg:Value() and IsReady(SUMMONER_2) then
 			if IsValidTarget(Enemy, 600, false, myHero.pos) and Enemy.health + Enemy.hpRegen*2.5 + Enemy.shieldAD < 50 + 20*myHero.levelData.lvl then
 				Control.CastSpell(HK_SUMMONER_2, Enemy)
 			end
 		end
-		if myHero:GetSpellData(4).name == "SummonerDot" and Menu.Ks.UseIg:Value() and IsReady(SUMMONER_1) then
+		if myHero:GetSpellData(4).name == "SummonerDot" and Menu.Ks.KsIg:Value() and IsReady(SUMMONER_1) then
 			if IsValidTarget(Enemy, 600, false, myHero.pos) and Enemy.health + Enemy.hpRegen*2.5 + Enemy.shieldAD < 50 + 20*myHero.levelData.lvl then
 				Control.CastSpell(HK_SUMMONER_1, Enemy)
 			end
